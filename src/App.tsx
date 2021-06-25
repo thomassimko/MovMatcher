@@ -11,7 +11,7 @@ export default function App() {
     <div className="h-screen w-screen bg-gray-50">
       <Router>
         <Navbar />
-        <div className="container m-12 ml-16">
+        <div className="ml-16 p-4">
           <Switch>
             <Route path="/search" component={SearchPage} />
             <Route path="/settings" component={SettingsPage} />

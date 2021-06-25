@@ -14,7 +14,11 @@ export const MovieListItem: FC<MovieListItemProps> = ({
 }) => {
   const posterSize = detailed ? 24 : 16;
   return (
-    <div className="flex p-4">
+    <div
+      className={`flex ${detailed ? 'p-4' : 'p-2'} ${
+        showHover && 'hover:bg-gray-50 cursor-pointer'
+      }`}
+    >
       <div className="flex-shrink-0 flex-grow-0 pr-4">
         {movie.poster_path ? (
           <img

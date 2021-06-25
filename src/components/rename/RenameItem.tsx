@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ArrowForward, CloseRounded, EditRounded } from '@material-ui/icons';
 import { Modal } from '../Modal';
-import { SearchPage } from '../../pages/SearchPage';
+import { MovieSearch } from '../search/MovieSearch';
 
 export interface IRenameItemProps {
   recommendation: MovieRecommendation;
@@ -41,7 +41,7 @@ export const RenameItem: FC<IRenameItemProps> = ({
           }
           modalTitle="Edit Match"
         >
-          <SearchPage />
+          <MovieSearch showHover />
         </Modal>
 
         <a

@@ -9,12 +9,12 @@ export const SearchBar: FC<ISearchBarProps> = (props) => {
   const [searchText, setSearchText] = useState<string>();
 
   return (
-    <div className="bg-white shadow p-4 flex">
+    <div className="flex">
       <span className="w-auto flex justify-end items-center text-gray-500 p-2">
         <Search className="text-3xl" />
       </span>
       <input
-        className="rounded p-2 flex-grow mr-2"
+        className="rounded p-2 flex-grow mr-2 border-b"
         type="text"
         placeholder="Search for movie"
         onChange={(e) => setSearchText(e.target.value)}

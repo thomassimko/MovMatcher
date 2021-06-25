@@ -3,14 +3,15 @@ import { SearchBar } from '../components/search/SearchBar';
 import { MovieListItem } from '../components/search/MovieListItem';
 import { searchMovie, searchMovieFuzzy } from '../utils/elasticDB';
 import { MovieSearch } from '../components/search/MovieSearch';
+import { Card } from '../components/Card';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SearchPageProps {}
 
 export const SearchPage: FC<SearchPageProps> = (props: SearchPageProps) => {
   return (
-    <div className="flex flex-col h-full">
+    <Card extraClasses="h-full">
       <MovieSearch detailed />
-    </div>
+    </Card>
   );
 };

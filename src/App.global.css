@@ -85,7 +85,7 @@ a:hover {
   max-width: 100%;
 }
 
-.navbar:hover .nav-link a > :first-child {
+.navbar:hover .nav-link div > :first-child {
   margin-right: 0.5rem;
 }
 

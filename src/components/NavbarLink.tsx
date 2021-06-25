@@ -19,10 +19,11 @@ export const NavbarLink: FC<ISidebarLinkProps> = ({
   const activeClass = active ? 'text-gray-300' : 'text-gray-600';
 
   return (
-    <li
-      className={`${activeClass} nav-link flex hover:text-gray-500 cursor-pointer items-center px-4 py-3 hover:bg-gray-900 w-full`}
+    <Link
+      to={href}
+      className={`${activeClass} nav-link flex hover:text-gray-500 cursor-pointer items-center px-4 py-3 hover:bg-gray-900 w-full m-0`}
     >
-      <Link to={href} className="m-0 flex items-center">
+      <div className="flex items-center">
         {icon}
         <span className="nav-link-text text-sm">{text}</span>
         {notificationCount && (
@@ -30,7 +31,7 @@ export const NavbarLink: FC<ISidebarLinkProps> = ({
             {notificationCount}
           </div>
         )}
-      </Link>
-    </li>
+      </div>
+    </Link>
   );
 };
