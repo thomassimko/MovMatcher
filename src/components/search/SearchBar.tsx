@@ -24,7 +24,7 @@ export const SearchBar: FC<ISearchBarProps> = (props) => {
       />
       <button
         type="button"
-        className="bg-red-400 hover:bg-red-300 rounded text-white p-2 pl-4 pr-4"
+        className="bg-red-400 hover:bg-red-300 rounded text-white py-2 px-4"
         onClick={() => props.doSearch(searchText)}
       >
         <p className="font-semibold text-xs">Search</p>

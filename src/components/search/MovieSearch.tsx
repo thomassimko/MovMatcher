@@ -22,7 +22,9 @@ export const MovieSearch: FC<IMovieSearchProps> = (
     setLoading(true);
     const results = await searchMovieFuzzy(text);
     setMovieMatches(results);
-    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   };
 
   return (

@@ -6,15 +6,17 @@ import { MovieSearch } from '../search/MovieSearch';
 export interface IRenameItemProps {
   recommendation: MovieRecommendation;
   removeMovieRecommendation: () => void;
+  outputPath: string;
 }
 
 export const RenameItem: FC<IRenameItemProps> = ({
   recommendation,
   removeMovieRecommendation,
+  outputPath,
 }) => {
   return (
     <div
-      className="grid p-2.5"
+      className="grid p-2.5 text-sm"
       style={{ gridTemplateColumns: '1fr min-content 1fr min-content' }}
     >
       <div
@@ -30,7 +32,7 @@ export const RenameItem: FC<IRenameItemProps> = ({
         className="overflow-ellipsis whitespace-nowrap overflow-hidden pl-1 pr-1"
         style={{ direction: 'rtl', textAlign: 'left' }}
       >
-        {recommendation.recommendedMovie.title}
+        {outputPath}
       </div>
       <div className="flex">
         <Modal

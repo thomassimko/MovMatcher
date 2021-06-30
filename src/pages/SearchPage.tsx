@@ -10,7 +10,7 @@ export interface SearchPageProps {}
 
 export const SearchPage: FC<SearchPageProps> = (props: SearchPageProps) => {
   return (
-    <Card extraClasses="h-full">
+    <Card extraClasses="flex-grow">
       <MovieSearch detailed />
     </Card>
   );
