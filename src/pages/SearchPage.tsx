@@ -1,7 +1,4 @@
-import React, { FC, useState } from 'react';
-import { SearchBar } from '../components/search/SearchBar';
-import { MovieListItem } from '../components/search/MovieListItem';
-import { searchMovie, searchMovieFuzzy } from '../utils/elasticDB';
+import React, { FC } from 'react';
 import { MovieSearch } from '../components/search/MovieSearch';
 import { Card } from '../components/Card';
 
@@ -10,7 +7,7 @@ export interface SearchPageProps {}
 
 export const SearchPage: FC<SearchPageProps> = (props: SearchPageProps) => {
   return (
-    <Card extraClasses="flex-grow">
+    <Card extraClasses="flex-grow overflow-y-scroll">
       <MovieSearch detailed />
     </Card>
   );

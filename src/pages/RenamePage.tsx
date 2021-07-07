@@ -1,5 +1,4 @@
-import React, { FC, useState } from 'react';
-import { Button } from '@material-ui/core';
+import React, { FC, useRef, useState } from 'react';
 import { RenameItem } from '../components/rename/RenameItem';
 import { searchMovieFuzzy } from '../utils/elasticDB';
 import { Card } from '../components/Card';
@@ -9,6 +8,7 @@ import {
   RenameDestinationOptions,
   SelectOutputMethod,
 } from '../components/rename/SelectOutputMethod';
+import { Button } from '../components/Button';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RenamePageProps {}
@@ -19,6 +19,7 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
   const [renameMethod, setRenameMethod] = useState(
     RenameDestinationOptions.COPY
   );
+  const selectDirectoryRef = useRef(null);
 
   const loadFiles = async (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) {
@@ -47,16 +48,14 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
   };
 
   return (
-    <Card extraClasses="flex flex-col flex-grow">
+    <Card extraClasses="flex flex-col flex-grow overflow-y-scroll">
       <div className="flex">
-        <label
-          htmlFor="selectDirectory"
-          className="bg-red-400 hover:bg-red-300 rounded text-white py-2 px-4 inline-block cursor-pointer"
-        >
+        <Button onClick={() => selectDirectoryRef.current.click()}>
           Select Directory
-        </label>
+        </Button>
         <input
           id="selectDirectory"
+          ref={selectDirectoryRef}
           directory=""
           webkitdirectory=""
           type="file"
@@ -80,9 +79,7 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
         ))}
       </div>
       <div className="mt-2 flex flex-row-reverse">
-        <Button variant="contained" color="primary">
-          Rename
-        </Button>
+        <Button>Rename</Button>
         <SelectOutputMethod
           defaultValue={renameMethod}
           onOutputMethodChange={(method: RenameDestinationOptions) =>

@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Search } from '@material-ui/icons';
+import { Button } from '../Button';
 
 export interface ISearchBarProps {
   doSearch: (text?: string) => void;
@@ -22,13 +23,9 @@ export const SearchBar: FC<ISearchBarProps> = (props) => {
           event.key === 'Enter' && props.doSearch(searchText)
         }
       />
-      <button
-        type="button"
-        className="bg-red-400 hover:bg-red-300 rounded text-white py-2 px-4"
-        onClick={() => props.doSearch(searchText)}
-      >
+      <Button onClick={() => props.doSearch(searchText)}>
         <p className="font-semibold text-xs">Search</p>
-      </button>
+      </Button>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { ArrowForward, CloseRounded, EditRounded } from '@material-ui/icons';
+import { IconButton } from '@material-ui/core';
 import { Modal } from '../Modal';
 import { MovieSearch } from '../search/MovieSearch';
 
@@ -16,7 +17,7 @@ export const RenameItem: FC<IRenameItemProps> = ({
 }) => {
   return (
     <div
-      className="grid p-2.5 text-sm"
+      className="grid p-2.5 text-sm items-center"
       style={{ gridTemplateColumns: '1fr min-content 1fr min-content' }}
     >
       <div
@@ -37,21 +38,24 @@ export const RenameItem: FC<IRenameItemProps> = ({
       <div className="flex">
         <Modal
           button={
-            <a className="text-red-400 p-0 cursor-pointer hover:text-red-300 m-0 ml-1">
+            <IconButton color="primary" aria-label="edit" size="small">
               <EditRounded />
-            </a>
+            </IconButton>
           }
           modalTitle="Edit Match"
         >
           <MovieSearch showHover />
         </Modal>
 
-        <a
-          className="text-red-400 p-0 cursor-pointer hover:text-red-300 m-0 ml-1"
+        <IconButton
+          color="primary"
+          aria-label="edit"
+          size="small"
+          className="ml-1"
           onClick={() => removeMovieRecommendation()}
         >
           <CloseRounded />
-        </a>
+        </IconButton>
       </div>
     </div>
   );
