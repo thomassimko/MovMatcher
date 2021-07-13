@@ -4,7 +4,7 @@ import { IconButton } from '@material-ui/core';
 import { Button } from './Button';
 
 export interface IModalProps {
-  button: JSX.Element;
+  button?: JSX.Element;
   modalTitle: string;
   closeButtonText?: string;
   showSubmitButton?: boolean;
@@ -28,9 +28,11 @@ export const Modal: FC<IModalProps> = ({
     setShowModal(false);
   };
 
-  const openModalButtonWithRefs = React.cloneElement(button, {
-    onClick: () => setShowModal(true),
-  });
+  const openModalButtonWithRefs =
+    button &&
+    React.cloneElement(button, {
+      onClick: () => setShowModal(true),
+    });
 
   return (
     <>

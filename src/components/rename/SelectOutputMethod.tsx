@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import Select from 'react-select';
 
 export interface ISelectOutputMethodProps {
-  defaultValue: RenameDestinationOptions;
   onOutputMethodChange: (method: RenameDestinationOptions) => void;
 }
 
@@ -13,7 +12,6 @@ export enum RenameDestinationOptions {
 }
 
 export const SelectOutputMethod: FC<ISelectOutputMethodProps> = ({
-  defaultValue,
   onOutputMethodChange,
 }) => {
   const options = [
@@ -29,7 +27,6 @@ export const SelectOutputMethod: FC<ISelectOutputMethodProps> = ({
       </span>
       <div className="w-52">
         <Select
-          defaultValue={options[defaultValue]}
           menuPlacement="top"
           options={options}
           onChange={({ value }) => onOutputMethodChange(value)}

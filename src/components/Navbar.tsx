@@ -20,7 +20,7 @@ export const Navbar: React.FC = () => {
           >
             <div className="flex items-center">
               <span className="nav-link-text text-sm whitespace-nowrap">
-                Movie Matcher
+                Mov Matcher
               </span>
               <DoubleArrowRounded />
             </div>

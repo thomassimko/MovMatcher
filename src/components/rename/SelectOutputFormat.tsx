@@ -12,8 +12,6 @@ export const SelectOutputFormat: FC<ISelectOutputFormatProps> = ({
     { value: '{title} ({year})/{title} ({year}).{ext} ', label: 'Plex' },
     { value: '{title} ({year}).{ext}', label: 'Title (Year)' },
   ];
-  const defaultOption = options[0];
-  onOutputFormatChange(defaultOption.value);
 
   return (
     <div className="flex flex-grow justify-end">
@@ -22,7 +20,6 @@ export const SelectOutputFormat: FC<ISelectOutputFormatProps> = ({
       </span>
       <div className="w-52">
         <Select
-          defaultValue={defaultOption}
           options={options}
           onChange={({ value }) => onOutputFormatChange(value)}
         />

@@ -8,6 +8,10 @@ import { Navbar } from './components/Navbar';
 import { RenamePage } from './pages/RenamePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SearchPage } from './pages/SearchPage';
+import {
+  SettingsContext,
+  SettingsProvider,
+} from './components/settings/SettingsContext';
 
 export default function App() {
   const [hideTMDBInfo, setHideTMDBInfo] = useState<boolean>(false);
@@ -23,29 +27,38 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="h-screen w-screen bg-gray-50">
-        <Router>
-          <Navbar />
-          <div className="ml-16 p-4 h-full flex flex-col">
-            <Collapse in={!hideTMDBInfo}>
-              <Alert
-                severity="info"
-                onClose={() => setHideTMDBInfo(true)}
-                className="mb-2"
-              >
-                This product uses the TMDb API but is not endorsed or certified
-                by TMDb.
-              </Alert>
-            </Collapse>
+      <SettingsProvider>
+        <div className="h-screen w-screen bg-gray-50">
+          <Router>
+            <Navbar />
+            <div className="ml-16 p-4 h-full flex flex-col">
+              <SettingsContext.Consumer>
+                {([settings, dispatch]) => (
+                  <Collapse
+                    in={!hideTMDBInfo && !settings.dismissTmdbBanner}
+                    className="flex-shrink-0"
+                  >
+                    <Alert
+                      severity="info"
+                      onClose={() => setHideTMDBInfo(true)}
+                      className="mb-2"
+                    >
+                      This product uses the TMDb API but is not endorsed or
+                      certified by TMDb.
+                    </Alert>
+                  </Collapse>
+                )}
+              </SettingsContext.Consumer>
 
-            <Switch>
-              <Route path="/search" component={SearchPage} />
-              <Route path="/settings" component={SettingsPage} />
-              <Route path="/" exact component={RenamePage} />
-            </Switch>
-          </div>
-        </Router>
-      </div>
+              <Switch>
+                <Route path="/search" component={SearchPage} />
+                <Route path="/settings" component={SettingsPage} />
+                <Route path="/" exact component={RenamePage} />
+              </Switch>
+            </div>
+          </Router>
+        </div>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }

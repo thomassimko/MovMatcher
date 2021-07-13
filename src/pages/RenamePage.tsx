@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { RenameItem } from '../components/rename/RenameItem';
 import { searchMovieFuzzy } from '../utils/elasticDB';
 import { Card } from '../components/Card';
@@ -9,6 +9,13 @@ import {
   SelectOutputMethod,
 } from '../components/rename/SelectOutputMethod';
 import { Button } from '../components/Button';
+import {
+  renameFiles,
+  getFilesInDir,
+  FileInDirectory,
+} from '../utils/fileUtils';
+import { SettingsContext } from '../components/settings/SettingsContext';
+import { DirectoryPicker } from '../components/DirectoryPicker';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RenamePageProps {}
@@ -16,27 +23,24 @@ export interface RenamePageProps {}
 export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
   const [itemsToRename, setItemsToRename] = useState<MovieRecommendation[]>([]);
   const [outputFormat, setOutputFormat] = useState<string>();
-  const [renameMethod, setRenameMethod] = useState(
-    RenameDestinationOptions.COPY
-  );
-  const selectDirectoryRef = useRef(null);
+  const [renameMethod, setRenameMethod] = useState<RenameDestinationOptions>();
+  const [state, dispatch] = useContext(SettingsContext);
 
-  const loadFiles = async (fileList: FileList | null) => {
-    if (!fileList || fileList.length === 0) {
-      return;
-    }
+  console.log(outputFormat, renameMethod);
+
+  const loadFiles = async (directory: string) => {
+    const files: FileInDirectory[] = await getFilesInDir(directory);
     const movieRecommendations = Promise.all(
-      Array.from(fileList)
-        .filter((file) => !file.name.startsWith('.'))
-        .map(async (file) => {
-          const movies = await searchMovieFuzzy(file.path);
-          return {
-            fileName: file.name,
-            path: file.path,
-            recommendedMovie: movies.length === 0 ? null : movies[0],
-            extension: file.name.split('.').pop(),
-          };
-        })
+      files.map(async (file) => {
+        const movies = await searchMovieFuzzy(file.relativePath);
+        return {
+          fileName: file.name,
+          fullPath: file.fullPath,
+          relativePath: file.relativePath,
+          recommendedMovie: movies.length === 0 ? null : movies[0],
+          extension: file.extension,
+        };
+      })
     );
     setItemsToRename(await movieRecommendations);
   };
@@ -47,20 +51,30 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
     });
   };
 
+  const doRename = async () => {
+    const duplicates = itemsToRename.some(
+      (x) => itemsToRename.indexOf(x) !== itemsToRename.lastIndexOf(x)
+    );
+    if (duplicates) {
+      return;
+    }
+
+    const promises = Promise.all(
+      itemsToRename.map((item) => {
+        const src = item.fullPath;
+        const dest = formatOutput(item, outputFormat);
+        const destWithPath = `${state.outputFolder}/${dest}`;
+        return renameFiles(src, destWithPath, renameMethod);
+      })
+    );
+  };
+
   return (
     <Card extraClasses="flex flex-col flex-grow overflow-y-scroll">
       <div className="flex">
-        <Button onClick={() => selectDirectoryRef.current.click()}>
-          Select Directory
-        </Button>
-        <input
-          id="selectDirectory"
-          ref={selectDirectoryRef}
-          directory=""
-          webkitdirectory=""
-          type="file"
-          style={{ display: 'none' }}
-          onChange={(e) => loadFiles(e.target.files)}
+        <DirectoryPicker
+          onChange={(dir) => loadFiles(dir)}
+          buttonText="Select Input Directory"
         />
         <SelectOutputFormat
           onOutputFormatChange={(format: string) => setOutputFormat(format)}
@@ -69,19 +83,23 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
       <div className="flex-grow mt-3 overflow-y-scroll divide-y p-2 border border-gray-300 rounded shadow-inner">
         {itemsToRename.map((recommendation) => (
           <RenameItem
-            key={recommendation.path}
+            key={recommendation.fullPath}
             recommendation={recommendation}
             removeMovieRecommendation={() =>
               removeRecommendation(recommendation)
             }
-            outputPath={formatOutput(recommendation, outputFormat)}
+            outputFile={formatOutput(recommendation, outputFormat)}
           />
         ))}
       </div>
       <div className="mt-2 flex flex-row-reverse">
-        <Button>Rename</Button>
+        <Button
+          disabled={!outputFormat || renameMethod === undefined}
+          onClick={() => doRename()}
+        >
+          Rename
+        </Button>
         <SelectOutputMethod
-          defaultValue={renameMethod}
           onOutputMethodChange={(method: RenameDestinationOptions) =>
             setRenameMethod(method)
           }
