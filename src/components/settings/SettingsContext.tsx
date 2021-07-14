@@ -29,6 +29,7 @@ const reducer = (
   state: SettingsContextState,
   action: SettingsContextAction
 ) => {
+  console.log(action);
   switch (action.type) {
     case 'SET_INPUT_FOLDER':
       return {
@@ -61,6 +62,7 @@ export const SettingsContext = createContext<
 
 export const SettingsProvider: React.FC = ({ children }) => {
   const [curState, dispatch] = useReducer(reducer, initialState);
+  console.log(curState);
   return (
     <SettingsContext.Provider value={[curState, dispatch]}>
       {children}

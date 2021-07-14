@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import { ArrowForward, CloseRounded, EditRounded } from '@material-ui/icons';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Modal } from '../Modal';
 import { MovieSearch } from '../search/MovieSearch';
+import { SettingsContext } from '../settings/SettingsContext';
 
 export type IRenameItemProps = {
   recommendation: MovieRecommendation;
@@ -15,6 +16,9 @@ export const RenameItem: FC<IRenameItemProps> = ({
   removeMovieRecommendation,
   outputFile,
 }) => {
+  const [settings, dispatch] = useContext(SettingsContext);
+  const outputPath = `${settings.outputFolder}/${outputFile}`;
+  console.log(settings);
   return (
     <div
       className="grid p-2.5 text-sm items-center"
@@ -31,7 +35,7 @@ export const RenameItem: FC<IRenameItemProps> = ({
       <a className="text-gray-600 text-group-hover:border-gray-300 m-0">
         <ArrowForward className="text-gray-600" />
       </a>
-      <Tooltip title={`{output}/${outputFile}`}>
+      <Tooltip title={outputPath}>
         <div
           dir="rtl"
           className="overflow-ellipsis whitespace-nowrap overflow-hidden pl-1 pr-1 cursor-pointer"

@@ -49,9 +49,9 @@ export async function renameFiles(
   await fs.mkdir(path.dirname(newPath), { recursive: true });
   switch (method) {
     case RenameDestinationOptions.COPY:
-      return fs.copyFile(oldPath, newPath);
+      return fs.copyFile(oldPath.trim(), newPath.trim());
     case RenameDestinationOptions.MOVE:
-      return fs.rename(oldPath, newPath);
+      return fs.rename(oldPath.trim(), newPath.trim());
     case RenameDestinationOptions.IN_PLACE:
       return null;
     default:

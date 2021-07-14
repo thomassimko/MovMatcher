@@ -16,6 +16,7 @@ import {
 } from '../utils/fileUtils';
 import { SettingsContext } from '../components/settings/SettingsContext';
 import { DirectoryPicker } from '../components/DirectoryPicker';
+import { ProgressModal } from '../components/ProgressModal';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface RenamePageProps {}
@@ -24,6 +25,8 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
   const [itemsToRename, setItemsToRename] = useState<MovieRecommendation[]>([]);
   const [outputFormat, setOutputFormat] = useState<string>();
   const [renameMethod, setRenameMethod] = useState<RenameDestinationOptions>();
+  const [progress, setProgress] = useState<number>();
+  const [showProgressModal, setShowProgressModal] = useState<boolean>(false);
   const [state, dispatch] = useContext(SettingsContext);
 
   console.log(outputFormat, renameMethod);
@@ -58,15 +61,20 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
     if (duplicates) {
       return;
     }
-
+    setProgress(0);
+    setShowProgressModal(true);
     const promises = Promise.all(
       itemsToRename.map((item) => {
         const src = item.fullPath;
         const dest = formatOutput(item, outputFormat);
         const destWithPath = `${state.outputFolder}/${dest}`;
-        return renameFiles(src, destWithPath, renameMethod);
+        return renameFiles(src, destWithPath, renameMethod).then(() =>
+          setProgress((prevState) => prevState + 100 / itemsToRename.length)
+        );
       })
     );
+    await promises;
+    setShowProgressModal(false);
   };
 
   return (
@@ -105,6 +113,9 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
           }
         />
       </div>
+      {showProgressModal && (
+        <ProgressModal modalTitle="Progress" percentComplete={progress} />
+      )}
     </Card>
   );
 };

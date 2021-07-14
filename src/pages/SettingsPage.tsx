@@ -39,14 +39,14 @@ export const SettingsPage: FC<SettingsPageProps> = (
               disabled
               className="flex-grow"
               label="Output Directory"
-              defaultValue={state.inputFolder}
+              value={state.outputFolder}
               variant="outlined"
               size="small"
             />
             <div className="pl-2" />
             <DirectoryPicker
-              onChange={(directory) => updateDirectory(true, directory)}
-              buttonText="Change input directory"
+              onChange={(directory) => updateDirectory(false, directory)}
+              buttonText="Change output directory"
             />
           </div>
           <FormControlLabel
