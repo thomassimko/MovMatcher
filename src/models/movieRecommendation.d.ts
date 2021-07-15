@@ -1,7 +1,11 @@
 declare interface MovieRecommendation {
-  fileName: string;
-  fullPath: string;
-  relativePath: string;
-  extension: string;
+  inputFile: {
+    fileName: string;
+    fullPath: string;
+    relativePath: string;
+    size: number;
+    extension: string;
+  };
+  outputFile: string;
   recommendedMovie: Movie;
 }

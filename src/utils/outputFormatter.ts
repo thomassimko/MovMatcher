@@ -9,10 +9,10 @@ export function formatOutput(
   const replacementValues = {
     year: recommendation.recommendedMovie.release_year,
     title: recommendation.recommendedMovie.title,
-    ext: recommendation.extension,
+    ext: recommendation.inputFile.extension,
   };
 
-  return stringInject(format, replacementValues);
+  return stringInject(format, replacementValues).trim();
 }
 
 export default formatOutput;

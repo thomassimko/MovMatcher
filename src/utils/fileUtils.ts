@@ -1,4 +1,5 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
+import progress from 'progress-stream';
 import path from 'path';
 import { RenameDestinationOptions } from '../components/rename/SelectOutputMethod';
 
@@ -14,12 +15,12 @@ export async function getFilesInDir(
   baseSearchDirectory?: string
 ) {
   const out: FileInDirectory[] = [];
-  const filesWithHidden = await fs.readdir(folderPath);
+  const filesWithHidden = await fs.promises.readdir(folderPath);
   const files = filesWithHidden.filter((item) => !/(^|\/)\.[^/.]/g.test(item));
   const relativeDir = baseSearchDirectory || folderPath;
   await Promise.all(
     files.map(async (file) => {
-      if ((await fs.stat(`${folderPath}/${file}`)).isDirectory()) {
+      if ((await fs.promises.stat(`${folderPath}/${file}`)).isDirectory()) {
         const filesInDir = await getFilesInDir(
           `${folderPath}/${file}`,
           relativeDir
@@ -46,15 +47,35 @@ export async function renameFiles(
   newPath: string,
   method: RenameDestinationOptions
 ) {
-  await fs.mkdir(path.dirname(newPath), { recursive: true });
+  await fs.promises.mkdir(path.dirname(newPath), { recursive: true });
   switch (method) {
     case RenameDestinationOptions.COPY:
-      return fs.copyFile(oldPath.trim(), newPath.trim());
+      return fs.promises.copyFile(oldPath.trim(), newPath.trim());
     case RenameDestinationOptions.MOVE:
-      return fs.rename(oldPath.trim(), newPath.trim());
+      return fs.promises.rename(oldPath.trim(), newPath.trim());
     case RenameDestinationOptions.IN_PLACE:
       return null;
     default:
       return null;
   }
+}
+
+export function renameFilesProgress(
+  inputFile: string,
+  outputFile: string,
+  size: number
+) {
+  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+  const str = progress({
+    length: size,
+    time: 100,
+  });
+  fs.createReadStream(inputFile)
+    .pipe(str)
+    .pipe(fs.createWriteStream(outputFile));
+  return str;
+}
+
+export function getFileSize(file: string) {
+  return fs.statSync(file).size;
 }

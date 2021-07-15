@@ -22,6 +22,10 @@ export default function App() {
         main: '#F87171',
         contrastText: '#FFFFFF',
       },
+      secondary: {
+        main: '#10B981',
+        contrastText: '#FFFFFF',
+      },
     },
   });
 

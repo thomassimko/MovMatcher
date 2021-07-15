@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { RenameItem } from '../components/rename/RenameItem';
 import { searchMovieFuzzy } from '../utils/elasticDB';
 import { Card } from '../components/Card';
@@ -8,40 +8,47 @@ import {
   RenameDestinationOptions,
   SelectOutputMethod,
 } from '../components/rename/SelectOutputMethod';
-import { Button } from '../components/Button';
 import {
-  renameFiles,
   getFilesInDir,
   FileInDirectory,
+  getFileSize,
 } from '../utils/fileUtils';
 import { SettingsContext } from '../components/settings/SettingsContext';
 import { DirectoryPicker } from '../components/DirectoryPicker';
 import { ProgressModal } from '../components/ProgressModal';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface RenamePageProps {}
-
-export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
+export const RenamePage: FC = (props) => {
   const [itemsToRename, setItemsToRename] = useState<MovieRecommendation[]>([]);
   const [outputFormat, setOutputFormat] = useState<string>();
   const [renameMethod, setRenameMethod] = useState<RenameDestinationOptions>();
-  const [progress, setProgress] = useState<number>();
-  const [showProgressModal, setShowProgressModal] = useState<boolean>(false);
-  const [state, dispatch] = useContext(SettingsContext);
+  const [settings, dispatch] = useContext(SettingsContext);
 
-  console.log(outputFormat, renameMethod);
-
+  useEffect(() => {
+    setItemsToRename((items) =>
+      items.map((item) => {
+        const relativeOutput = formatOutput(item, outputFormat);
+        return {
+          ...item,
+          outputFile: `${settings.outputFolder}/${relativeOutput}`,
+        };
+      })
+    );
+  }, [outputFormat]);
   const loadFiles = async (directory: string) => {
     const files: FileInDirectory[] = await getFilesInDir(directory);
     const movieRecommendations = Promise.all(
       files.map(async (file) => {
         const movies = await searchMovieFuzzy(file.relativePath);
         return {
-          fileName: file.name,
-          fullPath: file.fullPath,
-          relativePath: file.relativePath,
+          inputFile: {
+            fileName: file.name,
+            fullPath: file.fullPath,
+            relativePath: file.relativePath,
+            size: getFileSize(file.fullPath),
+            extension: file.extension,
+          },
           recommendedMovie: movies.length === 0 ? null : movies[0],
-          extension: file.extension,
+          outputFile: undefined,
         };
       })
     );
@@ -54,28 +61,28 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
     });
   };
 
-  const doRename = async () => {
-    const duplicates = itemsToRename.some(
-      (x) => itemsToRename.indexOf(x) !== itemsToRename.lastIndexOf(x)
-    );
-    if (duplicates) {
-      return;
-    }
-    setProgress(0);
-    setShowProgressModal(true);
-    const promises = Promise.all(
-      itemsToRename.map((item) => {
-        const src = item.fullPath;
-        const dest = formatOutput(item, outputFormat);
-        const destWithPath = `${state.outputFolder}/${dest}`;
-        return renameFiles(src, destWithPath, renameMethod).then(() =>
-          setProgress((prevState) => prevState + 100 / itemsToRename.length)
-        );
-      })
-    );
-    await promises;
-    setShowProgressModal(false);
-  };
+  // const doRename = () => {
+  //   const duplicates = itemsToRename.some(
+  //     (x) => itemsToRename.indexOf(x) !== itemsToRename.lastIndexOf(x)
+  //   );
+  //   if (duplicates) {
+  //     return;
+  //   }
+  //   const renameRequests: RenameRequest[] = itemsToRename.map((item) => {
+  //     const src = item.fullPath;
+  //     const dest = formatOutput(item, outputFormat);
+  //     const destWithPath = `${state.outputFolder}/${dest}`;
+  //     return {
+  //       inputFile: src,
+  //       outputFile: destWithPath,
+  //       size: getFileSize(src),
+  //       method: renameMethod,
+  //       title: item.recommendedMovie.title,
+  //     };
+  //   });
+  //   setRenamingFiles(true);
+  //
+  // };
 
   return (
     <Card extraClasses="flex flex-col flex-grow overflow-y-scroll">
@@ -91,31 +98,30 @@ export const RenamePage: FC<RenamePageProps> = (props: RenamePageProps) => {
       <div className="flex-grow mt-3 overflow-y-scroll divide-y p-2 border border-gray-300 rounded shadow-inner">
         {itemsToRename.map((recommendation) => (
           <RenameItem
-            key={recommendation.fullPath}
+            key={recommendation.inputFile.fullPath}
             recommendation={recommendation}
             removeMovieRecommendation={() =>
               removeRecommendation(recommendation)
             }
-            outputFile={formatOutput(recommendation, outputFormat)}
           />
         ))}
       </div>
       <div className="mt-2 flex flex-row-reverse">
-        <Button
+        <ProgressModal
+          modalTitle="Progress"
+          recommendations={itemsToRename}
           disabled={!outputFormat || renameMethod === undefined}
-          onClick={() => doRename()}
-        >
-          Rename
-        </Button>
+          method={renameMethod}
+          format={outputFormat}
+        />
         <SelectOutputMethod
           onOutputMethodChange={(method: RenameDestinationOptions) =>
             setRenameMethod(method)
           }
         />
       </div>
-      {showProgressModal && (
-        <ProgressModal modalTitle="Progress" percentComplete={progress} />
-      )}
     </Card>
   );
 };
+
+export default RenamePage;
