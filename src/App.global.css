@@ -80,3 +80,7 @@ a:hover {
 .navbar:hover .nav-logo svg {
   transform: rotate(-180deg);
 }
+
+.progress-modal-item + .progress-modal-item {
+  border-top: 1px solid;
+}
