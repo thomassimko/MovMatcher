@@ -1,17 +1,16 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
+import settings from 'electron-settings';
 
 export type SettingsContextState = {
   inputFolder: string;
   outputFolder: string;
   dismissTmdbBanner: boolean;
-  hideDonateButton: boolean;
 };
 
 export type SettingsContextActionType =
   | 'SET_INPUT_FOLDER'
   | 'SET_OUTPUT_FOLDER'
-  | 'DISMISS_TMBD_BANNER'
-  | 'HIDE_DONATE_BUTTON';
+  | 'DISMISS_TMBD_BANNER';
 
 export type SettingsContextAction = {
   type: SettingsContextActionType;
@@ -21,39 +20,28 @@ export type SettingsContextAction = {
 const initialState: SettingsContextState = {
   inputFolder: '/',
   outputFolder: '/',
-  dismissTmdbBanner: true,
-  hideDonateButton: false,
+  dismissTmdbBanner: false,
+};
+
+const actionTypeToSettingsKey = {
+  SET_INPUT_FOLDER: 'inputFolder',
+  SET_OUTPUT_FOLDER: 'outputFolder',
+  DISMISS_TMBD_BANNER: 'dismissTmdbBanner',
 };
 
 const reducer = (
   state: SettingsContextState,
   action: SettingsContextAction
 ) => {
-  console.log(action);
-  switch (action.type) {
-    case 'SET_INPUT_FOLDER':
-      return {
-        ...state,
-        inputFolder: action.payload,
-      };
-    case 'SET_OUTPUT_FOLDER':
-      return {
-        ...state,
-        outputFolder: action.payload,
-      };
-    case 'DISMISS_TMBD_BANNER':
-      return {
-        ...state,
-        dismissTmdbBanner: action.payload,
-      };
-    case 'HIDE_DONATE_BUTTON':
-      return {
-        ...state,
-        hideDonateButton: action.payload,
-      };
-    default:
-      return state;
+  const key = actionTypeToSettingsKey[action.type];
+  if (!key) {
+    return state;
   }
+  settings.set(key, action.payload);
+  return {
+    ...state,
+    [key]: action.payload,
+  };
 };
 
 export const SettingsContext = createContext<
@@ -62,7 +50,17 @@ export const SettingsContext = createContext<
 
 export const SettingsProvider: React.FC = ({ children }) => {
   const [curState, dispatch] = useReducer(reducer, initialState);
-  console.log(curState);
+
+  useEffect(() => {
+    Object.keys(actionTypeToSettingsKey).forEach((key) =>
+      settings.get(key).then((value) => {
+        return dispatch({
+          type: key as SettingsContextActionType,
+          payload: value as any,
+        } as SettingsContextAction);
+      })
+    );
+  }, []);
   return (
     <SettingsContext.Provider value={[curState, dispatch]}>
       {children}

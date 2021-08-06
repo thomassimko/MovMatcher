@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import './App.global.css';
 import { Alert } from '@material-ui/lab';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -58,6 +63,7 @@ export default function App() {
                 <Route path="/search" component={SearchPage} />
                 <Route path="/settings" component={SettingsPage} />
                 <Route path="/" exact component={RenamePage} />
+                <Redirect from="" to="/" />
               </Switch>
             </div>
           </Router>

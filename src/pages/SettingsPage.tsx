@@ -12,6 +12,7 @@ import { DirectoryPicker } from '../components/DirectoryPicker';
 import {
   SettingsContext,
   SettingsContextAction,
+  SettingsContextActionType,
 } from '../components/settings/SettingsContext';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -26,6 +27,14 @@ export const SettingsPage: FC<SettingsPageProps> = (
     const data: SettingsContextAction = {
       type: isInput ? 'SET_INPUT_FOLDER' : 'SET_OUTPUT_FOLDER',
       payload: directory,
+    };
+    dispatch(data);
+  };
+
+  const updateSetting = (type: SettingsContextActionType, payload: boolean) => {
+    const data: SettingsContextAction = {
+      type,
+      payload,
     };
     dispatch(data);
   };
@@ -50,12 +59,16 @@ export const SettingsPage: FC<SettingsPageProps> = (
             />
           </div>
           <FormControlLabel
-            control={<Switch name="tmbd" />}
+            control={
+              <Switch
+                name="tmbd"
+                checked={!!state?.dismissTmdbBanner}
+                onChange={(e) =>
+                  updateSetting('DISMISS_TMBD_BANNER', e.target.checked)
+                }
+              />
+            }
             label="Suppress TMDb Message"
-          />
-          <FormControlLabel
-            control={<Switch name="donate" />}
-            label="Hide donate button"
           />
         </FormGroup>
         <FormHelperText>Be careful</FormHelperText>
